@@ -40,9 +40,7 @@ const HomeScreen = () => {
                         onPressOut={() => handlePressOut(scaleValue1)}
                         activeOpacity={0.8}
                     >
-                        <View style={styles.buttonIconContainer}>
-                            <Text style={styles.buttonIcon}>📝</Text>
-                        </View>
+                      
                         <Text style={styles.buttonTitle}>Task 1</Text>
                         <Text style={styles.buttonSubtitle}>First assignment</Text>
                     </TouchableOpacity>
@@ -56,9 +54,6 @@ const HomeScreen = () => {
                         onPressOut={() => handlePressOut(scaleValue2)}
                         activeOpacity={0.8}
                     >
-                        <View style={styles.buttonIconContainer}>
-                            <Text style={styles.buttonIcon}>🚀</Text>
-                        </View>
                         <Text style={styles.buttonTitle}>Task 2</Text>
                         <Text style={styles.buttonSubtitle}>Second assignment</Text>
                     </TouchableOpacity>

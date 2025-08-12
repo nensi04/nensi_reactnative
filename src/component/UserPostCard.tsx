@@ -61,14 +61,14 @@ const UserPostCard: React.FC<UserPostCardProps> = ({
             onPress={() => onEdit(item)}
             activeOpacity={0.8}
           >
-            <Text style={styles.editButtonText}>✏️ Edit</Text>
+            <Text style={styles.editButtonText}> Edit</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.actionButton, styles.deleteButton]}
             onPress={() => onDelete(item)}
             activeOpacity={0.8}
           >
-            <Text style={styles.deleteButtonText}>🗑️ Delete</Text>
+            <Text style={styles.deleteButtonText}> Delete</Text>
           </TouchableOpacity>
         </View>
       </View>

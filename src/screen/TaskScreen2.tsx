@@ -95,7 +95,7 @@ const TaskScreen2 = () => {
 
   const renderEmptyState = () => (
     <EmptyState
-      icon="📝"
+      icon=""
       title="No Posts Yet"
       message="Create your first post to get started!"
       isDarkMode={isDarkMode}

@@ -29,7 +29,6 @@ const TaskScreen1 = () => {
 
   const handlePostPress = (post: any) => {
     console.log('Post pressed:', post.id);
-    // You can add navigation or modal logic here
   };
 
   const renderItem = ({ item, index }: { item: any; index: number }) => (
@@ -43,8 +42,7 @@ const TaskScreen1 = () => {
 
   const renderFooter = () => {
     if (!loadingMore) return null;
-    
-    // Show skeleton items when loading more posts
+
     return (
       <SkeletonLoader isDarkMode={isDarkMode} itemCount={3} />
     );
@@ -61,7 +59,7 @@ const TaskScreen1 = () => {
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <Header title="Task Screen 1" isDarkMode={isDarkMode}   onToggleTheme={toggleTheme} />
 
-      {/* List */}
+     
       {loading ? (
         <SkeletonLoader isDarkMode={isDarkMode} />
       ) : (

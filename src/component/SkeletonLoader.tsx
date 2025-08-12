@@ -37,7 +37,6 @@ const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({ isDarkMode = false, ite
 
   const renderSkeletonItem = (index: number) => (
     <View key={`skeleton-${uniqueId}-${index}`} style={[styles.card, isDarkMode && styles.cardDark]}>
-      {/* Post number skeleton */}
       <Animated.View
         style={[
           styles.postNumberSkeleton,
@@ -48,7 +47,6 @@ const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({ isDarkMode = false, ite
         ]}
       />
       
-      {/* Title skeleton */}
       <Animated.View
         style={[
           styles.titleSkeleton,
@@ -59,7 +57,6 @@ const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({ isDarkMode = false, ite
         ]}
       />
       
-      {/* Body skeleton lines */}
       <Animated.View
         style={[
           styles.bodySkeleton,

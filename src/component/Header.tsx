@@ -11,7 +11,7 @@ interface HeaderProps {
     showBackButton?: boolean;
     onBackPress?: () => void;
 }
-// Beautiful Animated Toggle Component
+
 const AnimatedToggle: React.FC<{ isDarkMode: boolean; onToggle: () => void }> = ({ isDarkMode, onToggle }) => {
   const animatedValue = useRef(new Animated.Value(isDarkMode ? 1 : 0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -26,7 +26,6 @@ const AnimatedToggle: React.FC<{ isDarkMode: boolean; onToggle: () => void }> = 
   }, [isDarkMode]);
 
   const handlePress = () => {
-    // Scale animation for press feedback
     Animated.sequence([
       Animated.timing(scaleAnim, {
         toValue: 0.95,
@@ -70,17 +69,15 @@ const AnimatedToggle: React.FC<{ isDarkMode: boolean; onToggle: () => void }> = 
         activeOpacity={0.8}
       >
         <Animated.View style={[styles.toggleTrack, { backgroundColor }]}>
-          {/* Sun Icon */}
           <Animated.View style={[styles.sunIcon, { opacity: sunOpacity }]}>
             <Text style={styles.sunText}>☀️</Text>
           </Animated.View>
           
-          {/* Moon Icon */}
+        
           <Animated.View style={[styles.moonIcon, { opacity: moonOpacity }]}>
             <Text style={styles.moonText}>🌙</Text>
           </Animated.View>
           
-          {/* Animated Thumb */}
           <Animated.View
             style={[
               styles.toggleThumb,
@@ -111,27 +108,26 @@ const Header: React.FC<HeaderProps> = ({
     const handleBackPress = () => {
         try {
             if (onBackPress) {
-                // Use custom back press handler if provided
                 onBackPress();
                 return;
             }
             
-            // Check if we can safely go back
+           
             if (navigation.canGoBack()) {
                 navigation.goBack();
             } else {
-                // If we can't go back, try to find a safe route to navigate to
+              
                 const state = navigation.getState();
                 const routes = state?.routes || [];
                 
-                // Try to navigate to the first route in the stack (usually the main screen)
+               
                 if (routes.length > 0) {
                     const firstRoute = routes[0];
                     try {
                         navigation.navigate(firstRoute.name as never);
                     } catch (navError) {
                         console.warn('Could not navigate to first route:', firstRoute.name);
-                        // As last resort, try to reset to index 0
+                       
                         try {
                             navigation.dispatch(
                                 CommonActions.reset({
@@ -149,7 +145,7 @@ const Header: React.FC<HeaderProps> = ({
             }
         } catch (error) {
             console.error('Navigation error in handleBackPress:', error);
-            // If all else fails, just do nothing to prevent crash
+          
         }
     };
     

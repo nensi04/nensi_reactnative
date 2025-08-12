@@ -35,18 +35,15 @@ const PostCard: React.FC<PostCardProps> = ({ item, index, isDarkMode, onPress })
       activeOpacity={0.95}
       onPress={() => onPress?.(item)}
     >
-      {/* Card Header with Post Number */}
+     
       <View style={[styles.cardHeader, { backgroundColor: isDarkMode ? colorScheme.accent : colorScheme.secondary }]}>
         <View style={[styles.postBadge, { backgroundColor: colorScheme.primary }]}>
           <Text style={styles.postBadgeText}>#{item.id}</Text>
         </View>
-        <View style={styles.postMetaInfo}>
-          <Text style={[styles.postLabel, isDarkMode && styles.postLabelDark]}>Blog Post</Text>
-          <Text style={[styles.postDate, isDarkMode && styles.postDateDark]}>Just now</Text>
-        </View>
+     
       </View>
       
-      {/* Card Content */}
+    
       <View style={styles.cardContent}>
         <Text style={[styles.title, isDarkMode && styles.titleDark]} numberOfLines={2}>
           {item.title.charAt(0).toUpperCase() + item.title.slice(1)}
@@ -56,7 +53,6 @@ const PostCard: React.FC<PostCardProps> = ({ item, index, isDarkMode, onPress })
         </Text>
       </View>
       
-      {/* Decorative Elements */}
       <View style={[styles.cardDecoration, { backgroundColor: colorScheme.primary }]} />
     </TouchableOpacity>
   );

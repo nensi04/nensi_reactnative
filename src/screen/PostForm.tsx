@@ -207,7 +207,7 @@ const PostForm = () => {
                   activeOpacity={0.8}
                 >
                   <Text style={styles.saveButtonText}>
-                    {isEditMode ? '✏️ Update Post' : '📝 Create Post'}
+                    {isEditMode ? ' Update Post' : 'Create Post'}
                   </Text>
                 </TouchableOpacity>
               </View>
