@@ -4,6 +4,9 @@ interface Post {
   id: string;
   title: string;
   body: string;
+  imageUrl?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface PostsState {

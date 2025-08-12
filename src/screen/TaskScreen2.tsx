@@ -1,71 +1,148 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { 
+  StyleSheet, 
+  View, 
+  FlatList, 
+  Alert, 
+  StatusBar,
+  RefreshControl,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { RootState } from '../store/Store';
 import { deletePost, setPosts } from '../store/PostSlice';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Header from '../component/Header';
+import UserPostCard from '../component/UserPostCard';
+import EmptyState from '../component/EmptyState';
+import CreateButton from '../component/CreateButton';
+import { useTheme } from '../hooks/useTheme';
 
 type RootStackParamList = {
   TaskScreen2: undefined;
-  PostForm: { mode: 'add' | 'edit'; post?: { id: string; title: string; body: string } };
+  PostForm: { mode: 'add' | 'edit'; post?: { id: string; title: string; body: string; createdAt: string; updatedAt: string } };
 };
 
-
 type TaskScreen2NavProp = NativeStackNavigationProp<RootStackParamList, 'TaskScreen2'>;
+
+interface Post {
+  id: string;
+  title: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const TaskScreen2 = () => {
+  const { isDarkMode, toggleTheme } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
+  
   const dispatch = useDispatch();
-const navigation = useNavigation<TaskScreen2NavProp>();
+  const navigation = useNavigation<TaskScreen2NavProp>();
   const posts = useSelector((state: RootState) => state.posts.posts);
 
   useEffect(() => {
-    const loadPosts = async () => {
+    loadPosts();
+  }, []);
+
+  const loadPosts = async () => {
+    try {
       const storedPosts = await AsyncStorage.getItem('posts');
       if (storedPosts) {
         dispatch(setPosts(JSON.parse(storedPosts)));
       }
-    };
-    loadPosts();
-  }, []);
-
-  const removePost = async (id: string) => {
-    dispatch(deletePost(id));
-    const updatedPosts = posts.filter(p => p.id !== id);
-    await AsyncStorage.setItem('posts', JSON.stringify(updatedPosts));
+    } catch (error) {
+      console.error('Error loading posts:', error);
+    }
   };
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate('PostForm', { mode: 'add' })}
-      >
-        <Text style={styles.addText}>+ Add Post</Text>
-      </TouchableOpacity>
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadPosts();
+    setRefreshing(false);
+  };
 
-      <FlatList
-        data={posts}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.postCard}>
-            <Text style={styles.postTitle}>{item.title}</Text>
-            <Text>{item.body}</Text>
-            <View style={styles.actions}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate('PostForm', { mode: 'edit', post: item })}
-              >
-                <Text style={styles.edit}>Edit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => removePost(item.id)}>
-                <Text style={styles.delete}>Delete</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+  const handleEditPost = (post: Post) => {
+    navigation.navigate('PostForm', { mode: 'edit', post });
+  };
+
+  const handleDeletePost = (post: Post) => {
+    Alert.alert(
+      'Delete Post',
+      `Are you sure you want to delete "${post.title}"?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => removePost(post.id) }
+      ]
+    );
+  };
+
+  const removePost = async (id: string) => {
+    try {
+      dispatch(deletePost(id));
+      const updatedPosts = posts.filter(p => p.id !== id);
+      await AsyncStorage.setItem('posts', JSON.stringify(updatedPosts));
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      Alert.alert('Error', 'Failed to delete post');
+    }
+  };
+
+  const handleCreatePost = () => {
+    navigation.navigate('PostForm', { mode: 'add' });
+  };
+
+  const renderEmptyState = () => (
+    <EmptyState
+      icon="📝"
+      title="No Posts Yet"
+      message="Create your first post to get started!"
+      isDarkMode={isDarkMode}
+    />
+  );
+
+  const renderPostItem = ({ item }: { item: Post }) => (
+    <UserPostCard
+      item={item}
+      isDarkMode={isDarkMode}
+      onEdit={handleEditPost}
+      onDelete={handleDeletePost}
+    />
+  );
+
+  return (
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : '#F8F9FA' }]}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <Header 
+        title="My Posts" 
+        isDarkMode={isDarkMode} 
+        onToggleTheme={toggleTheme}
       />
+      
+      <View style={styles.content}>
+        <CreateButton
+          title="Create New Post"
+          onPress={handleCreatePost}
+          isDarkMode={isDarkMode}
+        />
+
+        <FlatList
+          data={posts}
+          keyExtractor={(item) => item.id}
+          renderItem={renderPostItem}
+          ListEmptyComponent={renderEmptyState}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={isDarkMode ? '#60A5FA' : '#3B82F6'}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={posts.length === 0 ? styles.emptyContainer : styles.listContainer}
+        />
+      </View>
     </View>
   );
 };
@@ -73,23 +150,21 @@ const navigation = useNavigation<TaskScreen2NavProp>();
 export default TaskScreen2;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10 },
-  addButton: {
-    backgroundColor: '#2196F3',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 10,
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: 100,
   },
-  addText: { color: '#fff', fontWeight: 'bold' },
-  postCard: {
-    backgroundColor: '#f9f9f9',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  postTitle: { fontSize: 16, fontWeight: 'bold' },
-  actions: { flexDirection: 'row', marginTop: 5, gap: 10 },
-  edit: { color: 'green' },
-  delete: { color: 'red' },
 });

@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Animated, Dimensions } from 'react-native';
 
@@ -113,23 +113,43 @@ const Header: React.FC<HeaderProps> = ({
             if (onBackPress) {
                 // Use custom back press handler if provided
                 onBackPress();
+                return;
+            }
+            
+            // Check if we can safely go back
+            if (navigation.canGoBack()) {
+                navigation.goBack();
             } else {
-                // Default navigation behavior
-                if (navigation.canGoBack()) {
-                    navigation.goBack();
+                // If we can't go back, try to find a safe route to navigate to
+                const state = navigation.getState();
+                const routes = state?.routes || [];
+                
+                // Try to navigate to the first route in the stack (usually the main screen)
+                if (routes.length > 0) {
+                    const firstRoute = routes[0];
+                    try {
+                        navigation.navigate(firstRoute.name as never);
+                    } catch (navError) {
+                        console.warn('Could not navigate to first route:', firstRoute.name);
+                        // As last resort, try to reset to index 0
+                        try {
+                            navigation.dispatch(
+                                CommonActions.reset({
+                                    index: 0,
+                                    routes: [{ name: firstRoute.name }],
+                                })
+                            );
+                        } catch (resetError) {
+                            console.error('Reset navigation failed:', resetError);
+                        }
+                    }
                 } else {
-                    // Navigate to Home if no back stack
-                    navigation.navigate('Home' as never);
+                    console.warn('No routes available in navigation state');
                 }
             }
         } catch (error) {
-            console.log('Navigation error:', error);
-            // Fallback to Home screen on error
-            try {
-                navigation.navigate('Home' as never);
-            } catch (fallbackError) {
-                console.log('Fallback navigation error:', fallbackError);
-            }
+            console.error('Navigation error in handleBackPress:', error);
+            // If all else fails, just do nothing to prevent crash
         }
     };
     
