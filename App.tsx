@@ -18,14 +18,9 @@ import { store } from './src/store/Store';
 import { ThemeProvider } from './src/context/ThemeContext';
 
 function App() {
-  // const isDarkMode = useColorScheme() === 'dark';
-  // console.log("IsDarkMode",isDarkMode);
+ 
   const Stack = createNativeStackNavigator();
   return (
-    // <SafeAreaView style={styles.container}>
-    //   <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-    //  <HomeScreen></HomeScreen>
-    // </SafeAreaView>
     <Provider store={store}>
       <ThemeProvider>
         <NavigationContainer>
